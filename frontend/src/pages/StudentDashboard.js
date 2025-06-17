@@ -18,7 +18,7 @@ function StudentDashboard() {
   const [studentToDelete, setStudentToDelete] = useState(null);
   const [studentToEdit, setStudentToEdit] = useState(null);
   
-  const API_URL = process.env.REACT_APP_API_URL || "http://127.0.0.1:5001/api";
+  const API_URL = "http://127.0.0.1:5001/api";
 
   useEffect(() => {
     fetch(`${API_URL}/students`)
@@ -189,7 +189,7 @@ function StudentDashboard() {
       toast.error(err.message || 'Sync failed.', { id: 'sync-toast' });
     });
   };
-
+  // csv file download config
   const downloadCSV = () => {
     if (students.length === 0) {
       toast.error("No student data to download.");

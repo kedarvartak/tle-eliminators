@@ -2,16 +2,16 @@ import React from 'react';
 import { formatDistance, differenceInDays } from 'date-fns';
 
 const StatCard = ({ label, value, subtext }) => (
-    <div className="bg-slate-800/50 p-4 rounded-lg text-center">
-        <p className="text-sm text-gray-400">{label}</p>
-        <p className="text-3xl font-bold text-white mt-1">{value}</p>
-        {subtext && <p className="text-xs text-gray-500 mt-1">{subtext}</p>}
+    <div className="bg-gray-100 dark:bg-slate-800/50 p-4 rounded-lg text-center">
+        <p className="text-sm text-gray-500 dark:text-gray-400">{label}</p>
+        <p className="text-3xl font-bold text-gray-900 dark:text-white mt-1">{value}</p>
+        {subtext && <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">{subtext}</p>}
     </div>
 );
 
 const ProblemStats = ({ submissions }) => {
     if (!submissions || submissions.length === 0) {
-        return null; // Don't render anything if there are no submissions
+        return null; // renders empty if no submissions
     }
 
     const solvedSubmissions = submissions.filter(s => s.verdict === 'OK');

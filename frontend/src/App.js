@@ -6,14 +6,17 @@ import { Toaster } from 'react-hot-toast';
 
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentProfile from "./pages/StudentProfile";
+import Footer from "./components/Footer";
 
 function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'light');
 
   useEffect(() => {
     const root = window.document.documentElement;
+    const body = window.document.body;
     const isDark = theme === 'dark';
     root.classList.toggle('dark', isDark);
+    body.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
   
@@ -22,7 +25,7 @@ function App() {
   };
 
   return (
-    <div className="bg-white dark:bg-brand-dark text-gray-800 dark:text-gray-100 min-h-screen transition-colors duration-300 font-sans">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-brand-dark text-gray-800 dark:text-gray-100 transition-colors duration-300 font-sans">
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -77,10 +80,14 @@ function App() {
         </div>
       </nav>
 
-      <Routes>
-        <Route path="/" element={<StudentDashboard />} />
-        <Route path="/students/:id" element={<StudentProfile />} />
-      </Routes>
+      <main className="flex-grow">
+        <Routes>
+          <Route path="/" element={<StudentDashboard />} />
+          <Route path="/students/:id" element={<StudentProfile />} />
+        </Routes>
+      </main>
+
+      <Footer />
     </div>
   );
 }
