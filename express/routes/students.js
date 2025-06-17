@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
-const { getUserInfo, getContestHistory, getSubmissionHistory } = require('../services/codeforcesService');
+const { fetchCodeforcesData } = require('../services/codeforcesService');
+const { syncAllStudents } = require('../cron/jobs');
 
 
 router.get('/', async (req, res, next) => {
@@ -56,52 +57,58 @@ router.post('/', async (req, res, next) => {
 
 
 router.post('/:id/sync', async (req, res, next) => {
-    let student;
     try {
-        student = await Student.findById(req.params.id);
+        const student = await Student.findById(req.params.id);
         if (!student) {
             return res.status(404).json({ error: 'Student not found' });
         }
 
-        const [cfData, contestHistory, submissionHistory] = await Promise.all([
-            getUserInfo(student.codeforces_handle),
-            getContestHistory(student.codeforces_handle),
-            getSubmissionHistory(student.codeforces_handle)
-        ]);
-
-        student.current_rating = cfData.rating || student.current_rating || 0;
-        student.max_rating = cfData.maxRating || student.max_rating || 0;
-        student.contest_history = contestHistory || [];
-        student.submission_history = submissionHistory || [];
-        student.last_updated = new Date();
+        const newData = await fetchCodeforcesData(student.codeforces_handle);
         
-        const updatedStudent = await student.save();
+        const updatedStudent = await Student.findByIdAndUpdate(
+            req.params.id,
+            { $set: newData },
+            { new: true }
+        );
+
         res.json(updatedStudent);
-
     } catch (err) {
-        
-        if (err.isAxiosError && student) {
-            return res.status(400).json({ error: `Sync failed. The Codeforces handle "${student.codeforces_handle}" may be invalid.` });
-        }
-        
-        next(err);
+        // The service now provides a clean error message
+        res.status(400).json({ error: err.message });
     }
 });
 
 
 router.put('/:id', async (req, res, next) => {
     try {
-        const student = await Student.findByIdAndUpdate(
-            req.params.id, 
-            req.body, 
-            { new: true, runValidators: true }
-        );
-
-        if (!student) {
+        const studentToUpdate = await Student.findById(req.params.id);
+        if (!studentToUpdate) {
             return res.status(404).json({ error: 'Student not found' });
         }
 
-        res.json(student);
+        let updatePayload = { ...req.body };
+
+        // Check if the codeforces handle has changed
+        const newHandle = req.body.codeforces_handle;
+        if (newHandle && newHandle !== studentToUpdate.codeforces_handle) {
+            try {
+                console.log(`Handle changed for ${studentToUpdate.name}. Fetching new data for ${newHandle}...`);
+                const newData = await fetchCodeforcesData(newHandle);
+                // Combine fetched data with the rest of the request body
+                updatePayload = { ...updatePayload, ...newData };
+            } catch (error) {
+                // If the new handle is invalid, stop the update and return an error
+                return res.status(400).json({ error: error.message });
+            }
+        }
+        
+        const updatedStudent = await Student.findByIdAndUpdate(
+            req.params.id,
+            updatePayload,
+            { new: true, runValidators: true }
+        );
+
+        res.json(updatedStudent);
     } catch (err) {
         next(err);
     }

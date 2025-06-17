@@ -25,78 +25,62 @@ const generateApiSignature = (methodName, params) => {
 };
 
 /**
- * Fetches user information from the Codeforces API.
+ * Fetches and combines user info, contest history, and submission history from the Codeforces API.
+ * Uses authenticated call for user.info if API keys are provided.
  * @param {string} handle - The Codeforces handle of the user.
- * @returns {Promise<Object>} A promise that resolves to the user's data.
+ * @returns {Promise<object>} An object containing the processed data.
+ * @throws {Error} Throws an error if the handle is not found or the API fails.
  */
-const getUserInfo = async (handle) => {
-  const methodName = 'user.info';
-  const params = {
-    handles: handle,
-    apiKey: API_KEY,
-    time: Math.floor(Date.now() / 1000),
-  };
-
-  const apiSig = generateApiSignature(methodName, params);
-  params.apiSig = apiSig;
-
-  try {
-    const response = await axios.get(`${API_BASE_URL}${methodName}`, { params });
-    if (response.data.status === 'OK') {
-      return response.data.result[0];
-    } else {
-      throw new Error(response.data.comment || 'Failed to fetch user info from Codeforces.');
+const fetchCodeforcesData = async (handle) => {
+    
+    const userInfoParams = { handles: handle };
+    if (API_KEY && API_SECRET) {
+        userInfoParams.apiKey = API_KEY;
+        userInfoParams.time = Math.floor(Date.now() / 1000);
+        userInfoParams.apiSig = generateApiSignature('user.info', userInfoParams);
     }
-  } catch (error) {
-    console.error('Codeforces API Error:', error.message);
-    throw error;
-  }
-};
 
-/**
- * Fetches contest history for a user from the Codeforces API.
- * @param {string} handle - The Codeforces handle of the user.
- * @returns {Promise<Array>} A promise that resolves to the user's contest history.
- */
-const getContestHistory = async (handle) => {
-  const methodName = 'user.rating';
-  try {
-    const response = await axios.get(`${API_BASE_URL}${methodName}`, { params: { handle } });
-    if (response.data.status === 'OK') {
-      // The result is an array of contest objects
-      return response.data.result;
-    } else {
-      throw new Error(response.data.comment || 'Failed to fetch contest history from Codeforces.');
-    }
-  } catch (error) {
-    console.error('Codeforces API Error (user.rating):', error.message);
-    // Rethrow to be handled by the sync route
-    throw error;
-  }
-};
+    try {
+        const [userInfoRes, contestHistoryRes, submissionHistoryRes] = await axios.all([
+            axios.get(`${API_BASE_URL}user.info`, { params: userInfoParams }),
+            axios.get(`${API_BASE_URL}user.rating`, { params: { handle } }),
+            axios.get(`${API_BASE_URL}user.status`, { params: { handle, from: 1, count: 2000 } })
+        ]);
 
-/**
- * Fetches submission history for a user from the Codeforces API.
- * @param {string} handle - The Codeforces handle of the user.
- * @returns {Promise<Array>} A promise that resolves to the user's submission history.
- */
-const getSubmissionHistory = async (handle) => {
-  const methodName = 'user.status';
-  try {
-    const response = await axios.get(`${API_BASE_URL}${methodName}`, { params: { handle } });
-    if (response.data.status === 'OK') {
-      return response.data.result;
-    } else {
-      throw new Error(response.data.comment || 'Failed to fetch submission history from Codeforces.');
+        if (userInfoRes.data.status !== 'OK') {
+            throw new Error(`Failed to fetch user info: ${userInfoRes.data.comment}`);
+        }
+        if (contestHistoryRes.data.status !== 'OK') {
+            throw new Error(`Failed to fetch contest history: ${contestHistoryRes.data.comment}`);
+        }
+        if (submissionHistoryRes.data.status !== 'OK') {
+            throw new Error(`Failed to fetch submission history: ${submissionHistoryRes.data.comment}`);
+        }
+
+        const user = userInfoRes.data.result[0];
+
+        return {
+            current_rating: user.rating || 0,
+            max_rating: user.maxRating || 0,
+            contest_history: contestHistoryRes.data.result,
+            submission_history: submissionHistoryRes.data.result,
+            last_updated: new Date()
+        };
+
+    } catch (error) {
+        if (error.response && error.response.status === 400) {
+            const comment = error.response.data.comment;
+            if (comment && comment.includes('not found')) {
+                throw new Error(`Codeforces handle "${handle}" not found.`);
+            }
+        }
+        // Consolidate error logging
+        const errorMessage = error.response?.data?.comment || error.message;
+        console.error(`Codeforces API Error for handle "${handle}": ${errorMessage}`);
+        throw new Error(`Failed to sync data for ${handle}. Reason: ${errorMessage}`);
     }
-  } catch (error) {
-    console.error('Codeforces API Error (user.status):', error.message);
-    throw error;
-  }
 };
 
 module.exports = {
-  getUserInfo,
-  getContestHistory,
-  getSubmissionHistory,
+  fetchCodeforcesData,
 }; 
