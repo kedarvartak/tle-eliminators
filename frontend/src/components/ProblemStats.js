@@ -11,13 +11,18 @@ const StatCard = ({ label, value, subtext }) => (
 
 const ProblemStats = ({ submissions }) => {
     if (!submissions || submissions.length === 0) {
-        return null; // renders empty if no submissions
+        return null; // Don't render anything if there are no submissions
     }
 
     const solvedSubmissions = submissions.filter(s => s.verdict === 'OK');
     const uniqueSolvedProblems = [...new Map(solvedSubmissions.map(s => [s.problem.name, s])).values()];
+    
+    const ratedProblems = uniqueSolvedProblems.filter(p => p.problem.rating);
+    const averageRating = ratedProblems.length > 0
+        ? Math.round(ratedProblems.reduce((sum, p) => sum + p.problem.rating, 0) / ratedProblems.length)
+        : 'N/A';
 
-    const mostDifficultProblem = uniqueSolvedProblems.reduce((max, p) => 
+    const mostDifficultProblem = ratedProblems.reduce((max, p) => 
         (p.problem.rating > (max?.problem.rating || 0)) ? p : max, 
     null);
 
@@ -26,20 +31,24 @@ const ProblemStats = ({ submissions }) => {
     const avgProblemsPerDay = (uniqueSolvedProblems.length / daysSinceFirstSolve).toFixed(2);
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 my-6">
-            <StatCard 
-                label="Most Difficult Problem"
-                value={mostDifficultProblem ? mostDifficultProblem.problem.rating : 'N/A'}
-                subtext={mostDifficultProblem ? `${mostDifficultProblem.problem.name}` : ''}
-            />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
             <StatCard 
                 label="Total Problems Solved"
                 value={uniqueSolvedProblems.length}
             />
             <StatCard 
-                label="Average Problems / Day"
+                label="Avg Problems / Day"
                 value={avgProblemsPerDay}
-                subtext={`Since ${formatDistance(firstSubmissionDate, new Date(), { addSuffix: true })}`}
+                subtext={`Since first solve`}
+            />
+            <StatCard 
+                label="Highest Rated Solve"
+                value={mostDifficultProblem ? mostDifficultProblem.problem.rating : 'N/A'}
+                subtext={mostDifficultProblem ? `${mostDifficultProblem.problem.name}` : ''}
+            />
+            <StatCard 
+                label="Average Problem Rating"
+                value={averageRating}
             />
         </div>
     );
