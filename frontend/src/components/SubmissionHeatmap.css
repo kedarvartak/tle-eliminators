@@ -1,0 +1,41 @@
+/* react-calendar-heatmap styles */
+
+.react-calendar-heatmap {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+}
+
+.react-calendar-heatmap .color-empty {
+  fill: #2e3b4e; /* Darker empty cell color */
+}
+
+.react-calendar-heatmap .color-scale-1 {
+  fill: #0e4429;
+}
+
+.react-calendar-heatmap .color-scale-2 {
+  fill: #006d32;
+}
+
+.react-calendar-heatmap .color-scale-3 {
+  fill: #26a641;
+}
+
+.react-calendar-heatmap .color-scale-4 {
+  fill: #39d353;
+}
+
+/* Tooltip styles */
+.react-tooltip {
+  background-color: #1e293b !important;
+  color: #cbd5e1 !important;
+  border-radius: 6px !important;
+  padding: 8px 12px !important;
+  font-size: 12px !important;
+  border: 1px solid #334155 !important;
+}
+
+.react-tooltip.place-top::after {
+    border-top-color: #1e293b !important;
+} 

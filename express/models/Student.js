@@ -50,6 +50,14 @@ const studentSchema = new mongoose.Schema({
     disable_email_reminders: {
         type: Boolean,
         default: false
+    },
+    contest_history: {
+        type: Array,
+        default: []
+    },
+    submission_history: {
+        type: Array,
+        default: []
     }
 }, {
     timestamps: true 
