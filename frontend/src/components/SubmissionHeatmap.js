@@ -28,19 +28,19 @@ const calculateStreak = (dates) => {
 const SubmissionHeatmap = ({ submissions }) => {
     const today = new Date();
     const oneYearAgo = subYears(today, 1);
+    
+    const HeatmapStat = ({ value, label }) => (
+      <div className="text-center">
+        <span className="text-xl lg:text-2xl font-bold text-gray-800 dark:text-white">{value}</span>
+        <span className="ml-2 text-sm text-gray-500 dark:text-gray-400">{label}</span>
+      </div>
+    );
 
     if (!submissions || submissions.length === 0) {
         return (
-             <div className="p-4">
-                <div className="flex justify-between items-center mb-2 text-sm text-gray-400 px-1">
-                    <p className="font-bold text-base text-white">0 submissions in the past year</p>
-                    <div className="flex gap-4">
-                        <span>Total active days: 0</span>
-                        <span>Max streak: 0</span>
-                    </div>
-                </div>
+             <div className="p-4 rounded-lg bg-gray-50 dark:bg-slate-800/50">
                 <div className="mx-auto" style={{ maxWidth: '720px' }}>
-                    <CalendarHeatmap
+                     <CalendarHeatmap
                         startDate={oneYearAgo}
                         endDate={today}
                         values={[]}
@@ -49,7 +49,16 @@ const SubmissionHeatmap = ({ submissions }) => {
                         gutterSize={1}
                     />
                 </div>
-                 <Tooltip id="heatmap-tooltip" />
+                 <div className="flex justify-between items-center mt-4 text-xs text-gray-500 dark:text-gray-400">
+                    <p>Less</p>
+                    <div className="flex gap-1">
+                        <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-slate-700"></div>
+                        <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-slate-700"></div>
+                        <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-slate-700"></div>
+                        <div className="w-3 h-3 rounded-sm bg-gray-200 dark:bg-slate-700"></div>
+                    </div>
+                    <p>More</p>
+                </div>
             </div>
         );
     }
@@ -72,15 +81,13 @@ const SubmissionHeatmap = ({ submissions }) => {
     const maxStreak = calculateStreak(heatmapValues.map(v => v.date));
 
     return (
-        <div className="p-4">
-             <div className="flex justify-between items-center mb-2 text-sm text-gray-400 px-1">
-                <p className="font-bold text-base text-white">{totalSubmissionsLastYear} submissions in the past year</p>
-                <div className="flex gap-4">
-                    <span>Total active days: {totalActiveDays}</span>
-                    <span>Max streak: {maxStreak}</span>
-                </div>
+        <div className="p-4 rounded-lg bg-gray-50 dark:bg-slate-800/50">
+            <div className="flex justify-around items-center mb-4 text-sm text-gray-600 dark:text-gray-400 px-1">
+                <HeatmapStat value={totalSubmissionsLastYear} label="Submissions this year" />
+                <HeatmapStat value={totalActiveDays} label="Active days" />
+                <HeatmapStat value={maxStreak} label="Longest streak" />
             </div>
-            <div className="mx-auto" style={{ maxWidth: '720px' }}>
+            <div className="mx-auto heatmap-container" style={{ maxWidth: '720px' }}>
                 <CalendarHeatmap
                     startDate={oneYearAgo}
                     endDate={today}
@@ -98,6 +105,18 @@ const SubmissionHeatmap = ({ submissions }) => {
                     showMonthLabels={true}
                     gutterSize={1}
                 />
+            </div>
+            <div className="flex justify-between items-center mt-4 text-xs text-gray-500 dark:text-gray-400 px-2">
+                <p>Less</p>
+                <div className="flex items-center gap-1">
+                    <span className="sr-only">Color scale for submissions per day</span>
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--heatmap-scale-0, #ebedf0)'}}></div>
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--heatmap-scale-1)'}}></div>
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--heatmap-scale-2)'}}></div>
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--heatmap-scale-3)'}}></div>
+                    <div className="w-3 h-3 rounded-sm" style={{ backgroundColor: 'var(--heatmap-scale-4)'}}></div>
+                </div>
+                <p>More</p>
             </div>
             <Tooltip id="heatmap-tooltip" />
         </div>

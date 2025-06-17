@@ -3,6 +3,7 @@
 :root {
   --heatmap-month-label-color: #6b7280; 
   --heatmap-empty-color: #ebedf0; 
+  --heatmap-scale-0: #ebedf0;
   --heatmap-scale-1: #9be9a8;
   --heatmap-scale-2: #40c463;
   --heatmap-scale-3: #30a14e;
@@ -15,6 +16,7 @@
 [data-theme='dark'] {
   --heatmap-month-label-color: #94a3b8; 
   --heatmap-empty-color: #334155; 
+  --heatmap-scale-0: #334155;
   --heatmap-scale-1: #0e4429;
   --heatmap-scale-2: #006d32;
   --heatmap-scale-3: #26a641;
@@ -40,7 +42,7 @@
 
 
 .react-calendar-heatmap .color-empty {
-  fill: var(--heatmap-empty-color);
+  fill: var(--heatmap-scale-0);
 }
 
 
@@ -69,4 +71,13 @@
   font-size: 12px;
   border: 1px solid var(--tooltip-border);
   z-index: 999; 
+}
+
+/* Hover effect for heatmap cells */
+.heatmap-container .react-calendar-heatmap-day:hover {
+  transform: scale(1.15);
+  transition: transform 0.1s ease-in-out;
+  box-shadow: 0 0 5px rgba(0,0,0,0.2);
+  z-index: 10;
+  position: relative;
 } 
