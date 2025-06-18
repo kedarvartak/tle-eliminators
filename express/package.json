@@ -6,6 +6,7 @@
   "scripts": {
     "start": "nodemon server.js",
     "worker": "nodemon workers/emailWorker.js",
+    "sync-worker": "nodemon workers/syncWorker.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

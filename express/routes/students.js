@@ -2,19 +2,17 @@ const express = require('express');
 const router = express.Router();
 const Student = require('../models/Student');
 const { fetchCodeforcesData } = require('../services/codeforcesService');
-const { syncAllStudents } = require('../cron/jobs');
+const { scheduleSyncAllStudents } = require('../cron/jobs');
 
 /**
- * @route   POST /api/students/sync-all
- * @desc    Manually trigger the sync job for all students (for testing)
+ * @route   POST /api/students/schedule-sync
+ * @desc    Manually trigger the scheduler job (for testing)
  * @access  Public (for testing)
  */
-router.post('/sync-all', (req, res) => {
-    console.log('Manual sync-all trigger received.');
-    // Intentionally not awaiting this. It's a long process.
-    // The client gets an immediate response, and the job runs in the background.
-    syncAllStudents(); 
-    res.status(202).json({ message: 'Sync process for all students has been started. Check server logs for progress.' });
+router.post('/schedule-sync', (req, res) => {
+    console.log('Manual schedule-sync trigger received.');
+    scheduleSyncAllStudents(); 
+    res.status(202).json({ message: 'Process to schedule all students for sync has been started.' });
 });
 
 router.get('/', async (req, res, next) => {

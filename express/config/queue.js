@@ -1,7 +1,7 @@
 const { Queue } = require('bullmq');
 require('dotenv').config();
 
-// This connection object will be used by both the queue and the workers.
+// This connection object will be used by all queues and workers.
 const redisConnection = {
   host: new URL(process.env.REDIS_URL).hostname,
   port: new URL(process.env.REDIS_URL).port,
@@ -9,7 +9,7 @@ const redisConnection = {
   password: new URL(process.env.REDIS_URL).password,
 };
 
-// Create a new queue named 'email-queue' and export it.
+// Queue for sending email notifications
 const emailQueue = new Queue('email-queue', {
   connection: redisConnection,
   defaultJobOptions: {
@@ -21,7 +21,20 @@ const emailQueue = new Queue('email-queue', {
   },
 });
 
+// NEW: Queue for syncing student data from Codeforces API
+const syncQueue = new Queue('sync-queue', {
+  connection: redisConnection,
+  defaultJobOptions: {
+    attempts: 2,
+    backoff: {
+      type: 'exponential',
+      delay: 10000, // Wait 10 seconds before retrying a failed sync
+    },
+  },
+});
+
 module.exports = {
   emailQueue,
+  syncQueue,
   redisConnection,
 }; 
