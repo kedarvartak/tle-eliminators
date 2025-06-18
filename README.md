@@ -24,6 +24,13 @@ This is a full-stack MERN application for the position of full stack web develop
 5. Bar chart of number of problems solved per rating bucket
 6. Show a submission heat map
 
+
+![Analytics](analytics-1.png)
+
+
+![Analytics](analytics-2.png)
+
+
 *   **Automated Inactivity Detection and Email Reminders:** The system  identifies students who have not made any submissions on Codeforces for a predefined period (seven days). Upon detection, it automatically triggers a job to send a polite, encouraging reminder email to the student. 
 
 ## The Scalability Architecture: From Monolith to Distributed Queues
