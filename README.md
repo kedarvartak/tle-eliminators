@@ -1,7 +1,5 @@
 # Student Progress Management System
 
-## Project Overview
-
 This is a full-stack MERN application for the position of full stack web developer at TLE Eliminators - https://www.tle-eliminators.com. The application includes a dashboard that stores data in MongoDB, while fetching a user's codeforces data once each day(2am) while also allowing to manually fetch whenever needed. 
 
 
@@ -15,6 +13,8 @@ This is a full-stack MERN application for the position of full stack web develop
 ![Dashboard](dashboard.png)
 
 *   **Automated Codeforces Data Synchronization:** The system automatically fetches comprehensive data for each student from the Codeforces API once each day (2am) or when user manually selects to fetch updated data from the API.
+
+![Scalable](scalable.png)
 
 *   **In-Depth Performance Analytics:** For each student, the application generates and displays -
 1. Most difficult problem solved (by rating)
