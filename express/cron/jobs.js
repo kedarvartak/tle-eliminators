@@ -1,7 +1,7 @@
 const cron = require('node-cron');
 const Student = require('../models/Student');
 const { fetchCodeforcesData } = require('../services/codeforcesService');
-const { checkAndNotify } = require('../services/inactivityService');
+const { emailQueue } = require('../config/queue');
 
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -14,7 +14,7 @@ const syncAllStudents = async () => {
     const startTime = Date.now();
 
     try {
-        const students = await Student.find({});
+        const students = await Student.find({}).lean(); // Use lean for performance
         console.log(`Found ${students.length} students to sync.`);
 
         for (let i = 0; i < students.length; i++) {
@@ -23,17 +23,22 @@ const syncAllStudents = async () => {
 
             try {
                 const newData = await fetchCodeforcesData(student.codeforces_handle);
-                const updatedStudent = await Student.findByIdAndUpdate(
-                    student._id,
-                    { $set: newData },
-                    { new: true }
-                );
+                await Student.updateOne({ _id: student._id }, { $set: newData });
                 console.log(`Successfully synced data for ${student.name}.`);
 
-                await checkAndNotify(updatedStudent);
+                // Now, add a job to the queue instead of calling the service directly
+                // We pass only the necessary data to the job
+                await emailQueue.add('check-inactivity', { 
+                    studentId: student._id.toString(),
+                    name: student.name,
+                    email: student.email,
+                    disable_email_reminders: student.disable_email_reminders,
+                    submission_history: newData.submission_history, // Pass the fresh submission history
+                });
+                console.log(`Added inactivity check job for ${student.name} to the queue.`);
 
             } catch (error) {
-                console.error(`Failed to sync or process inactivity for ${student.name}. Reason: ${error.message}`);
+                console.error(`Failed to sync or queue job for ${student.name}. Reason: ${error.message}`);
             }
 
             // Add a delay to avoid hitting API rate limits
