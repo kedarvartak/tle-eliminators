@@ -128,8 +128,11 @@ function StudentDashboard() {
   };
 
   const handleEditInputChange = (e) => {
-    const { name, value } = e.target;
-    setStudentToEdit(prevState => ({ ...prevState, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setStudentToEdit(prevState => ({
+      ...prevState,
+      [name]: type === 'checkbox' ? checked : value
+    }));
      if (formErrors[name]) {
       setFormErrors(prevErrors => ({ ...prevErrors, [name]: null }));
     }
@@ -145,11 +148,18 @@ function StudentDashboard() {
     }
     setFormErrors({});
 
+    const updatePayload = {
+      name: studentToEdit.name,
+      email: studentToEdit.email,
+      phone_number: studentToEdit.phone_number,
+      codeforces_handle: studentToEdit.codeforces_handle,
+      disable_email_reminders: studentToEdit.disable_email_reminders,
+    };
 
     fetch(`${API_URL}/students/${studentToEdit._id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(studentToEdit)
+      body: JSON.stringify(updatePayload)
     })
     .then(res => {
       if (!res.ok) {
@@ -262,6 +272,7 @@ function StudentDashboard() {
                 <th scope="col" className="px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200">Rating</th>
                 <th scope="col" className="hidden px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200 md:table-cell">Max Rating</th>
                 <th scope="col" className="hidden px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200 md:table-cell">Last Updated</th>
+                <th scope="col" className="px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200">Reminders</th>
                 <th scope="col" className="px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200">Actions</th>
               </tr>
             </thead>
@@ -280,6 +291,7 @@ function StudentDashboard() {
                     <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-800 dark:text-gray-300 text-center">{student.current_rating}</td>
                     <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center md:table-cell">{student.max_rating}</td>
                     <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center md:table-cell">{student.last_updated ? new Date(student.last_updated).toLocaleString() : 'N/A'}</td>
+                    <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400 text-center">{student.reminder_sent_count || 0}</td>
                     <td className="whitespace-nowrap py-4 px-6 text-center text-sm">
                       <div className="flex items-center justify-center gap-4">
                         <button 
@@ -374,6 +386,22 @@ function StudentDashboard() {
               <div className="mb-6">
                 <label htmlFor="edit-codeforces_handle" className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Codeforces Handle</label>
                 <input type="text" name="codeforces_handle" id="edit-codeforces_handle" value={studentToEdit.codeforces_handle} onChange={handleEditInputChange} className="shadow-sm appearance-none border dark:border-slate-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-brand-blue" required />
+              </div>
+              <div className="mb-6">
+                <label htmlFor="disable_email_reminders" className="flex items-center justify-between cursor-pointer">
+                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Disable Inactivity Reminders</span>
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      id="disable_email_reminders"
+                      name="disable_email_reminders"
+                      className="sr-only peer"
+                      checked={studentToEdit.disable_email_reminders || false}
+                      onChange={handleEditInputChange}
+                    />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-red-600"></div>
+                  </div>
+                </label>
               </div>
               <div className="flex items-center justify-end gap-4">
                  <button type="button" onClick={() => setStudentToEdit(null)} className="font-outfit bg-gray-500 hover:bg-gray-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white font-normal py-2 px-4 rounded-lg transition-all border-b-2 border-gray-700 hover:border-gray-600 active:border-b-0">
