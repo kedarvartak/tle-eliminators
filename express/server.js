@@ -20,6 +20,7 @@ mongoose.connect(process.env.MONGO_URI)
     .catch(err => console.error('MongoDB connection error:', err));
 
 app.use('/api/students', require('./routes/students'));
+app.use('/api/cron', require('./routes/cron'));
 
 app.get('/', (req, res) => {
     res.send('Hello from the new Express backend!');

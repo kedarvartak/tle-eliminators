@@ -1,6 +1,9 @@
 const cron = require('node-cron');
 const Student = require('../models/Student');
+const CronJob = require('../models/CronJob');
 const { syncQueue } = require('../config/queue');
+
+let scheduledTasks = [];
 
 /**
  * Schedules the daily job to add all students to the sync queue.
@@ -35,19 +38,57 @@ const scheduleSyncAllStudents = async () => {
     console.log(`Finished daily scheduling job in ${duration} seconds.`);
 };
 
+const stopScheduledJobs = () => {
+    scheduledTasks.forEach(task => task.stop());
+    scheduledTasks = [];
+    console.log('All scheduled cron jobs have been stopped.');
+};
+
 /**
  * Initializes and schedules all cron jobs for the application.
  */
-const scheduleJobs = () => {
-    // Schedule the sync job to run daily at 2:00 AM.
-    const schedule = process.env.CRON_SCHEDULE || '0 2 * * *';
+const scheduleJobs = async () => {
+    stopScheduledJobs();
+    console.log('Initializing cron jobs...');
 
-    cron.schedule(schedule, scheduleSyncAllStudents, {
-        scheduled: true,
-        timezone: "Asia/Kolkata"
-    });
+    try {
+        let schedules = await CronJob.find({ isEnabled: true });
 
-    console.log(`Student sync scheduling job registered with pattern: "${schedule}"`);
+        if (schedules.length === 0) {
+            console.log('No schedules found in DB. Creating a default schedule.');
+            const defaultSchedule = new CronJob({
+                name: 'Default Daily Sync at 2 AM',
+                schedule: process.env.CRON_SCHEDULE || '0 2 * * *',
+            });
+            await defaultSchedule.save();
+            schedules.push(defaultSchedule);
+        }
+
+        schedules.forEach(({ schedule, name, timezone }) => {
+            if (cron.validate(schedule)) {
+                const task = cron.schedule(schedule, scheduleSyncAllStudents, {
+                    scheduled: true,
+                    timezone: timezone || 'Asia/Kolkata',
+                });
+                scheduledTasks.push(task);
+                console.log(`"${name}" job scheduled with pattern: "${schedule}"`);
+            } else {
+                console.error(`Invalid cron schedule pattern for "${name}": ${schedule}`);
+            }
+        });
+
+    } catch (error) {
+        console.error('Failed to schedule jobs:', error);
+    }
 };
 
-module.exports = { scheduleJobs, scheduleSyncAllStudents }; 
+const restartCronJobs = async () => {
+    console.log('Restarting cron jobs due to schedule changes...');
+    await scheduleJobs();
+};
+
+module.exports = { 
+    scheduleJobs, 
+    scheduleSyncAllStudents,
+    restartCronJobs 
+}; 
