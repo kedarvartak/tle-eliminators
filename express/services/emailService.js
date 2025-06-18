@@ -2,46 +2,28 @@ const nodemailer = require('nodemailer');
 
 let transporter;
 
-// Use an environment variable for the base URL of the frontend, with a fallback for development
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+
+const FRONTEND_URL = 'http://localhost:3000';
 const LOGO_URL = `${FRONTEND_URL}/logo.png`;
 
-/**
- * Sets up and returns a Nodemailer transporter.
- * For development, it uses Ethereal to create a test inbox.
- * For production, this should be configured with a real email service provider.
- */
+
 const setupTransporter = async () => {
     if (transporter) {
         return transporter;
     }
 
-    // In a real production environment, you would use process.env variables
-    // to configure a service like AWS SES, SendGrid, or Mailgun.
-    // For now, we will use Ethereal for development, which requires no setup.
-    if (process.env.NODE_ENV === 'production') {
-       console.error("CRITICAL: Email service is not configured for production. Emails will not be sent.");
-       // Return a mock transporter that does nothing in production if not configured.
-       return { sendMail: () => Promise.resolve() };
-    }
-
-    // Use Ethereal.email for development
     try {
         let testAccount = await nodemailer.createTestAccount();
-        console.log('Ethereal test account created. View sent emails at the "Preview URL" logged after sending.');
-        
         transporter = nodemailer.createTransport({
             host: 'smtp.ethereal.email',
             port: 587,
-            secure: false, // true for 465, false for other ports
+            secure: false, 
             auth: {
-                user: testAccount.user, // Generated ethereal user
-                pass: testAccount.pass, // Generated ethereal password
+                user: testAccount.user, 
+                pass: testAccount.pass, 
             },
         });
     } catch (error) {
-        console.error("Could not create Ethereal test account. Please check your internet connection.", error);
-        // Return a mock transporter to prevent crashes
         return { sendMail: () => Promise.resolve() };
     }
     
@@ -110,12 +92,9 @@ const sendInactivityReminder = async (studentName, studentEmail) => {
         const info = await mailTransporter.sendMail(mailOptions);
 
         console.log(`Inactivity reminder sent to ${studentEmail}. Message ID: ${info.messageId}`);
-        // Log the Ethereal URL for easy testing
         console.log(`Preview URL: ${nodemailer.getTestMessageUrl(info)}`);
 
     } catch (error) {
-        console.error(`Error sending email to ${studentEmail}:`, error);
-        // We don't re-throw the error because a failed email should not crash the entire sync process.
     }
 };
 

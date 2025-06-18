@@ -5,10 +5,7 @@ const { syncQueue } = require('../config/queue');
 
 let scheduledTasks = [];
 
-/**
- * Schedules the daily job to add all students to the sync queue.
- * This job is now just a "scheduler" or "producer".
- */
+
 const scheduleSyncAllStudents = async () => {
     console.log('Starting daily scheduling job...');
     const startTime = Date.now();
@@ -18,9 +15,6 @@ const scheduleSyncAllStudents = async () => {
         console.log(`Found ${students.length} students to schedule for sync.`);
 
         for (const student of students) {
-            // Add a job for each student to the sync-queue.
-            // The job name 'sync-student' describes the task.
-            // We pass the student's ID and handle as payload.
             await syncQueue.add('sync-student', { 
                 studentId: student._id.toString(),
                 handle: student.codeforces_handle
@@ -44,9 +38,6 @@ const stopScheduledJobs = () => {
     console.log('All scheduled cron jobs have been stopped.');
 };
 
-/**
- * Initializes and schedules all cron jobs for the application.
- */
 const scheduleJobs = async () => {
     stopScheduledJobs();
     console.log('Initializing cron jobs...');

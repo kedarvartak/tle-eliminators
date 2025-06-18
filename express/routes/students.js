@@ -6,8 +6,8 @@ const { scheduleSyncAllStudents } = require('../cron/jobs');
 
 /**
  * @route   POST /api/students/schedule-sync
- * @desc    Manually trigger the scheduler job (for testing)
- * @access  Public (for testing)
+ * @desc    Manually trigger the scheduler job - this has to be removed in prod dont forged silly ;)
+ * @access  Public 
  */
 router.post('/schedule-sync', (req, res) => {
     console.log('Manual schedule-sync trigger received.');
@@ -104,10 +104,9 @@ router.put('/:id', async (req, res, next) => {
             try {
                 console.log(`Handle changed for ${studentToUpdate.name}. Fetching new data for ${newHandle}...`);
                 const newData = await fetchCodeforcesData(newHandle);
-                // Combine fetched data with the rest of the request body
                 updatePayload = { ...updatePayload, ...newData };
             } catch (error) {
-                // If the new handle is invalid, stop the update and return an error
+                
                 return res.status(400).json({ error: error.message });
             }
         }

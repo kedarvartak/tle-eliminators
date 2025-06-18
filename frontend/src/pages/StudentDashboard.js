@@ -7,8 +7,6 @@ import cronstrue from 'cronstrue';
 
 const safeCronToString = (schedule, options = {}) => {
   try {
-    // The library throws an error for invalid/incomplete patterns.
-    // We catch it and return a fallback string.
     return cronstrue.toString(schedule, options);
   } catch (e) {
     return "Enter a valid cron pattern.";
@@ -187,7 +185,7 @@ function StudentDashboard() {
     })
     .then(updatedStudent => {
       setStudents(students.map(s => s._id === updatedStudent._id ? updatedStudent : s));
-      setStudentToEdit(null); // Close modal
+      setStudentToEdit(null); 
       toast.success('Student updated successfully!');
     })
     .catch(err => {
@@ -217,7 +215,7 @@ function StudentDashboard() {
       toast.error(err.message || 'Sync failed.', { id: 'sync-toast' });
     });
   };
-  // csv file download config
+  
   const downloadCSV = () => {
     if (students.length === 0) {
       toast.error("No student data to download.");
@@ -515,7 +513,7 @@ const ScheduleManager = ({ schedules, onSave, onDelete }) => {
       toast.error('Schedule name and pattern are required.');
       return;
     }
-    // Basic cron validation
+  
     if (editingSchedule.schedule.split(' ').length !== 5) {
       toast.error('Invalid cron pattern. It must have 5 parts.');
       return;

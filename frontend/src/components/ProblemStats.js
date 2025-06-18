@@ -11,7 +11,7 @@ const StatCard = ({ label, value, subtext }) => (
 
 const ProblemStats = ({ submissions }) => {
     if (!submissions || submissions.length === 0) {
-        return null; // Don't render anything if there are no submissions
+        return null; // don't render anything if there are no submissions
     }
 
     const solvedSubmissions = submissions.filter(s => s.verdict === 'OK');

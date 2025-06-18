@@ -3,13 +3,13 @@ const mongoose = require('mongoose');
 const CronJobSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, 'Please provide a name for the schedule.'],
+    required: [true, 'please provide a name for the schedule.'],
     trim: true,
     unique: true,
   },
   schedule: {
     type: String,
-    required: [true, 'Please provide a cron schedule string.'],
+    required: [true, 'please provide a cron schedule string.'],
     trim: true,
   },
   timezone: {

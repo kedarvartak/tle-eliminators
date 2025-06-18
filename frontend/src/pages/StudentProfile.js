@@ -10,7 +10,7 @@ import { subDays, isAfter } from 'date-fns';
 function StudentProfile() {
   const [student, setStudent] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [timeFilter, setTimeFilter] = useState('all'); // '30', '90', '365', 'all'
+  const [timeFilter, setTimeFilter] = useState('all'); 
   const { id } = useParams();
 
   const API_URL = "http://127.0.0.1:5001/api";

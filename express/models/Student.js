@@ -12,7 +12,7 @@ const studentSchema = new mongoose.Schema({
         unique: true,
         trim: true,
         lowercase: true,
-        match: [/^\S+@\S+\.\S+$/, 'Please use a valid email address']
+        match: [/^\S+@\S+\.\S+$/, 'please use a valid email address']
     },
     phone_number: {
         type: String,
@@ -23,7 +23,7 @@ const studentSchema = new mongoose.Schema({
             validator: function(v) {
                 return v == null || v === '' || /^\d{10}$/.test(v);
             },
-            message: 'Phone number must be exactly 10 digits'
+            message: 'phone number must be exactly 10 digits'
         }
     },
     codeforces_handle: {

@@ -22,7 +22,7 @@ router.post('/schedules', async (req, res) => {
     try {
         const newCronJob = new CronJob({ name, schedule, timezone });
         await newCronJob.save();
-        await restartCronJobs(); // Restart cron jobs with the new schedule
+        await restartCronJobs(); 
         res.status(201).json(newCronJob);
     } catch (err) {
         console.error(err.message);

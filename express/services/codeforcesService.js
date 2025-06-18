@@ -7,7 +7,7 @@ const API_BASE_URL = 'https://codeforces.com/api/';
 
 /**
  * Generates the API signature required for authenticated Codeforces API calls.
- * @param {string} methodName - The API method name (e.g., 'user.info').
+ * @param {string} methodName - The API method name 
  * @param {Object} params - The parameters for the API call.
  * @returns {string} The generated API signature hash.
  */
@@ -25,8 +25,8 @@ const generateApiSignature = (methodName, params) => {
 };
 
 /**
- * Fetches and combines user info, contest history, and submission history from the Codeforces API.
- * Uses authenticated call for user.info if API keys are provided.
+ * 
+ * 
  * @param {string} handle - The Codeforces handle of the user.
  * @returns {Promise<object>} An object containing the processed data.
  * @throws {Error} Throws an error if the handle is not found or the API fails.
