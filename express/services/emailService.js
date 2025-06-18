@@ -2,6 +2,10 @@ const nodemailer = require('nodemailer');
 
 let transporter;
 
+// Use an environment variable for the base URL of the frontend, with a fallback for development
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+const LOGO_URL = `${FRONTEND_URL}/logo.png`;
+
 /**
  * Sets up and returns a Nodemailer transporter.
  * For development, it uses Ethereal to create a test inbox.
@@ -58,15 +62,48 @@ const sendInactivityReminder = async (studentName, studentEmail) => {
             to: studentEmail,
             subject: 'Friendly Reminder: Let\'s Get Back to Solving!',
             html: `
-                <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px;">
-                    <h2 style="color: #0d6efd;">Hi ${studentName},</h2>
-                    <p>We noticed you haven't made any submissions on Codeforces in the last 7 days.</p>
-                    <p>Consistent practice is the key to success in competitive programming. Why not take a few minutes to solve a problem today and keep your skills sharp?</p>
-                    <p>Happy coding!</p>
-                    <br>
-                    <p>Best regards,</p>
-                    <p><strong>The TLE Eliminators Team</strong></p>
-                </div>
+              <body style="background-color: #f3f4f6; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; margin: 0; padding: 20px;">
+                <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                  <tr>
+                    <td align="center">
+                      <table width="600" border="0" cellspacing="0" cellpadding="40" style="background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                        <!-- Header -->
+                        <tr>
+                          <td align="center" style="border-bottom: 1px solid #e5e7eb;">
+                            <img src="${LOGO_URL}" alt="TLE Eliminators Logo" style="height: 40px; width: 40px;"/>
+                            <h1 style="font-size: 24px; font-weight: 600; color: #111827; margin-top: 10px;">TLE Eliminators</h1>
+                          </td>
+                        </tr>
+                        <!-- Body -->
+                        <tr>
+                          <td>
+                            <h2 style="font-size: 20px; font-weight: 600; color: #1f2937;">Hi ${studentName},</h2>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.5;">
+                              We noticed you haven't made any submissions on Codeforces in the last 7 days.
+                            </p>
+                            <p style="color: #4b5563; font-size: 16px; line-height: 1.5;">
+                              Consistent practice is the key to success in competitive programming. Keep your skills sharp and continue your journey!
+                            </p>
+                            <div style="text-align: center; margin: 30px 0;">
+                              <a href="${FRONTEND_URL}" style="background-color: #0284c7; color: #ffffff; padding: 14px 28px; text-decoration: none; border-radius: 6px; font-weight: 600; font-size: 16px;">
+                                Solve a Problem
+                              </a>
+                            </div>
+                          </td>
+                        </tr>
+                        <!-- Footer -->
+                        <tr>
+                          <td align="center" style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                            <p style="color: #6b7280; font-size: 12px;">
+                              &copy; ${new Date().getFullYear()} TLE Eliminators. All rights reserved.
+                            </p>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </body>
             `,
         };
 
