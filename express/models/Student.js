@@ -63,6 +63,9 @@ const studentSchema = new mongoose.Schema({
     timestamps: true 
 });
 
+// This is a compound index for sorting dashboard table on the basis of rating and name
+studentSchema.index({ current_rating: -1, name: 1 });
+
 const Student = mongoose.model('Student', studentSchema);
 
 module.exports = Student; 

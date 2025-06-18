@@ -6,7 +6,7 @@ const Footer = () => {
   const headingClasses = "text-sm font-semibold text-gray-900 dark:text-white tracking-wider uppercase";
 
   return (
-    <footer className="bg-gray-50 dark:bg-[#0A192F]">
+    <footer className="bg-gray-50 dark:bg-brand-dark">
       <div className="container mx-auto max-w-7xl py-12 px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           
