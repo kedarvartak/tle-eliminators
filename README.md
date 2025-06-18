@@ -7,6 +7,8 @@ This is a full-stack MERN application for the position of full stack web develop
 
 ## This solution includes
 
+![Jist of the solution](jist.png)
+
 *   **Student Management Dashboard:** The core of the frontend is a clean and responsive dashboard built with React. It provides full CRUD (Create, Read, Update, Delete) functionality for student profiles, allowing administrators to easily manage the roster of students being tracked.
 
   
