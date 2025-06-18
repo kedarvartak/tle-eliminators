@@ -5,16 +5,21 @@ This is a full-stack MERN application for the position of full stack web develop
 
 ## This solution includes
 
+
 ![Jist of the solution](jist.png)
+
 
 *   **Student Management Dashboard:** The core of the frontend is a clean and responsive dashboard built with React. It provides full CRUD (Create, Read, Update, Delete) functionality for student profiles, allowing administrators to easily manage the roster of students being tracked.
 
   
 ![Dashboard](dashboard.png)
 
+
 *   **Automated Codeforces Data Synchronization:** The system automatically fetches comprehensive data for each student from the Codeforces API once each day (2am) or when user manually selects to fetch updated data from the API.
 
+
 ![Scalable](scalable.png)
+
 
 *   **In-Depth Performance Analytics:** For each student, the application generates and displays -
 1. Most difficult problem solved (by rating)
@@ -38,6 +43,10 @@ This is a full-stack MERN application for the position of full stack web develop
 This solution is scalable as well, the backend was architected as a distributed system using a Producer/Consumer pattern, orchestrated by specialized job queues. This design ensures efficiency, resilience, and true scalability.
 
 ### The Components of the System
+
+
+![Scalable](scalable.png)
+
 
 1.  **The Scheduler (Producer):** A lightweight cron job serves as the system's main producer. Its sole responsibility is to trigger once every 24 hours. When it runs, it queries the database for the list of all students and, for each student, enqueues a `sync-student` job into a dedicated queue. 
 
