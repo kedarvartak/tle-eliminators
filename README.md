@@ -31,7 +31,6 @@ This is a full-stack MERN application for the position of full stack web develop
 *   **Automated Codeforces Data Synchronization:** The system automatically fetches comprehensive data for each student from the Codeforces API once each day (2am) or when user manually selects to fetch updated data from the API.
 
 
-![Scalable](scalable.png)
 
 
 *   **In-Depth Performance Analytics:** For each student, the application generates and displays -
