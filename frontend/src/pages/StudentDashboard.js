@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import "../App.css";
-import { Plus, Download, Eye, RefreshCw, Trash2, Edit, Save, X, Clock } from 'lucide-react';
+import { Plus, Download, Eye, RefreshCw } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { Link } from "react-router-dom";
 import cronstrue from 'cronstrue';
@@ -496,22 +496,43 @@ function StudentDashboard() {
 }
 
 const ScheduleManager = ({ schedules, onSave, onDelete }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [editingSchedule, setEditingSchedule] = useState(null);
+  const [scheduleToDelete, setScheduleToDelete] = useState(null);
 
-  const openModal = (schedule = null) => {
-    setEditingSchedule(schedule ? { ...schedule } : { name: '', schedule: '0 2 * * *', isEnabled: true });
-    setShowModal(true);
+  const openEditModal = (schedule = null) => {
+    setEditingSchedule(schedule ? { ...schedule } : { name: '', schedule: '0 2 * * *', timezone: 'Asia/Kolkata', isEnabled: true });
+    setShowEditModal(true);
   };
 
-  const closeModal = () => {
-    setShowModal(false);
+  const closeEditModal = () => {
+    setShowEditModal(false);
     setEditingSchedule(null);
   };
 
   const handleSave = () => {
+    if (!editingSchedule.name || !editingSchedule.schedule) {
+      toast.error('Schedule name and pattern are required.');
+      return;
+    }
+    // Basic cron validation
+    if (editingSchedule.schedule.split(' ').length !== 5) {
+      toast.error('Invalid cron pattern. It must have 5 parts.');
+      return;
+    }
     onSave(editingSchedule);
-    closeModal();
+    closeEditModal();
+  };
+
+  const handleDeleteClick = (schedule) => {
+    setScheduleToDelete(schedule);
+  };
+
+  const confirmDelete = () => {
+    if (scheduleToDelete) {
+      onDelete(scheduleToDelete._id);
+      setScheduleToDelete(null);
+    }
   };
 
   const handleInputChange = (e) => {
@@ -521,54 +542,119 @@ const ScheduleManager = ({ schedules, onSave, onDelete }) => {
 
   return (
     <div className="mb-8">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Sync Schedules</h2>
-        <button onClick={() => openModal()} className="flex items-center gap-2 bg-purple-600 text-white font-normal py-2 px-4 rounded-lg transition-all duration-300 font-outfit border-b-2 border-purple-800 hover:border-purple-700 hover:bg-purple-500 active:border-b-0">
+      <header className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+        <div>
+            <h2 className="text-3xl font-bold">Sync Schedules</h2>
+            <p className="text-gray-500 dark:text-gray-400 mt-1">Manage when and how often student data is synced.</p>
+        </div>
+        <button 
+          onClick={() => openEditModal()} 
+          className="flex items-center gap-2 bg-purple-600 text-white font-normal py-2 px-4 rounded-lg transition-all duration-300 font-outfit border-b-2 border-purple-800 hover:border-purple-700 hover:bg-purple-500 active:border-b-0 mt-4 sm:mt-0"
+        >
           <Plus size={18} /> Add Schedule
         </button>
-      </div>
-      <div className="bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700 overflow-hidden">
-        <ul className="divide-y divide-gray-200 dark:divide-slate-700">
-          {schedules.map(schedule => (
-            <li key={schedule._id} className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center hover:bg-gray-50 dark:hover:bg-slate-800/50">
-              <div className="mb-2 sm:mb-0">
-                <p className={`font-semibold ${!schedule.isEnabled && 'line-through text-gray-400'}`}>{schedule.name}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                  <Clock size={14} />
+      </header>
+      
+      <div className="overflow-x-auto bg-white dark:bg-slate-900 rounded-lg border border-gray-200 dark:border-slate-700">
+        <table className="min-w-full divide-y divide-gray-200 dark:divide-slate-700">
+          <thead className="bg-gray-50 dark:bg-slate-800">
+            <tr>
+              <th scope="col" className="py-3.5 px-6 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Name</th>
+              <th scope="col" className="px-6 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200">Frequency</th>
+              <th scope="col" className="hidden px-6 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-200 md:table-cell">Schedule</th>
+              <th scope="col" className="px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200">Status</th>
+              <th scope="col" className="px-6 py-3.5 text-center text-sm font-semibold text-gray-900 dark:text-gray-200">Actions</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-gray-200 dark:divide-slate-800 bg-white dark:bg-slate-900">
+            {schedules.map(schedule => (
+              <tr key={schedule._id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                <td className="whitespace-nowrap py-4 px-6 text-sm font-medium text-gray-900 dark:text-gray-100">{schedule.name}</td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400">
                   {safeCronToString(schedule.schedule, { use24HourTimeFormat: true })}
-                  <span className="text-xs text-gray-400">({schedule.schedule})</span>
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${schedule.isEnabled ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                  {schedule.isEnabled ? 'Active' : 'Disabled'}
-                </span>
-                <button onClick={() => openModal(schedule)} className="p-2 text-gray-500 hover:text-yellow-600 dark:hover:text-yellow-400"><Edit size={18} /></button>
-                <button onClick={() => onDelete(schedule._id)} className="p-2 text-gray-500 hover:text-red-600 dark:hover:text-red-500"><Trash2 size={18} /></button>
-              </div>
-            </li>
-          ))}
-        </ul>
+                </td>
+                <td className="hidden whitespace-nowrap px-6 py-4 text-sm text-gray-500 dark:text-gray-400 md:table-cell font-mono">{schedule.schedule}</td>
+                <td className="whitespace-nowrap px-6 py-4 text-sm text-center">
+                  <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${schedule.isEnabled ? 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300' : 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300'}`}>
+                    {schedule.isEnabled ? 'Active' : 'Disabled'}
+                  </span>
+                </td>
+                <td className="whitespace-nowrap py-4 px-6 text-center text-sm">
+                  <div className="flex items-center justify-center gap-4">
+                    <button onClick={() => openEditModal(schedule)} className="text-gray-500 hover:text-yellow-600 dark:hover:text-yellow-400 transition-colors" title="Edit Schedule">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.536L16.732 3.732z" /></svg>
+                    </button>
+                    <button onClick={() => handleDeleteClick(schedule)} className="text-gray-500 hover:text-red-600 dark:hover:text-red-500 transition-colors" title="Delete Schedule">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="w-5 h-5"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+             {schedules.length === 0 && (
+                <tr>
+                  <td colSpan="5" className="whitespace-nowrap p-12 text-center text-sm text-gray-500 dark:text-gray-400">
+                    No schedules found. Add one to get started!
+                  </td>
+                </tr>
+              )}
+          </tbody>
+        </table>
       </div>
 
-      {showModal && (
+      {showEditModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-md">
-            <h2 className="text-2xl font-bold mb-6">{editingSchedule?._id ? 'Edit' : 'Add'} Schedule</h2>
-            <div className="space-y-4">
-              <input type="text" name="name" value={editingSchedule.name} onChange={handleInputChange} placeholder="Schedule Name" className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600"/>
-              <input type="text" name="schedule" value={editingSchedule.schedule} onChange={handleInputChange} placeholder="Cron String (e.g., 0 5 * * *)" className="w-full p-2 border rounded dark:bg-slate-700 dark:border-slate-600"/>
-              <p className="text-sm text-gray-500 -mt-2">
-                {safeCronToString(editingSchedule.schedule, { use24HourTimeFormat: true, verbose: true })}
-              </p>
-              <label className="flex items-center gap-2">
-                <input type="checkbox" name="isEnabled" checked={editingSchedule.isEnabled} onChange={handleInputChange} />
-                Enabled
-              </label>
-            </div>
-            <div className="flex justify-end gap-4 mt-6">
-              <button onClick={closeModal} className="font-outfit bg-gray-500 hover:bg-gray-600 text-white font-normal py-2 px-4 rounded-lg"><X size={18}/></button>
-              <button onClick={handleSave} className="font-outfit bg-brand-blue hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-lg"><Save size={18}/></button>
+            <h2 className="text-2xl font-bold mb-6 text-brand-dark dark:text-white">{editingSchedule?._id ? 'Edit' : 'Add New'} Schedule</h2>
+            <form onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
+              <div className="mb-4">
+                <label htmlFor="name" className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Schedule Name</label>
+                <input type="text" name="name" id="name" value={editingSchedule.name} onChange={handleInputChange} className="shadow-sm appearance-none border dark:border-slate-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-brand-blue" required />
+              </div>
+
+              <div className="mb-4">
+                <label htmlFor="schedule" className="block text-gray-700 dark:text-gray-300 text-sm font-bold mb-2">Cron Pattern</label>
+                <input type="text" name="schedule" id="schedule" value={editingSchedule.schedule} onChange={handleInputChange} className="font-mono shadow-sm appearance-none border dark:border-slate-600 rounded w-full py-2 px-3 text-gray-700 dark:text-gray-200 bg-white dark:bg-slate-700 leading-tight focus:outline-none focus:ring-2 focus:ring-brand-blue" required />
+                <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+                  {safeCronToString(editingSchedule.schedule, { use24HourTimeFormat: true, verbose: true })}
+                </p>
+              </div>
+              
+              <div className="mb-6">
+                <label className="flex items-center justify-between cursor-pointer">
+                  <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Schedule Enabled</span>
+                  <div className="relative">
+                    <input type="checkbox" name="isEnabled" id="isEnabled" className="sr-only peer" checked={editingSchedule.isEnabled} onChange={handleInputChange} />
+                    <div className="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-green-600"></div>
+                  </div>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-4">
+                <button type="button" onClick={closeEditModal} className="font-outfit bg-gray-500 hover:bg-gray-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white font-normal py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all border-b-2 border-gray-700 hover:border-gray-600 active:border-b-0">
+                  Cancel
+                </button>
+                <button type="submit" className="font-outfit bg-brand-blue hover:bg-blue-700 text-white font-normal py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all border-b-2 border-indigo-900 hover:border-blue-700 active:border-b-0">
+                  {editingSchedule?._id ? 'Save Changes' : 'Add Schedule'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {scheduleToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+          <div className="bg-white dark:bg-slate-800 p-8 rounded-lg shadow-2xl w-full max-w-md">
+            <h2 className="text-2xl font-bold mb-4 text-brand-dark dark:text-white">Confirm Deletion</h2>
+            <p className="text-gray-700 dark:text-gray-300 mb-6">Are you sure you want to delete the schedule <span className="font-semibold">{scheduleToDelete.name}</span>? This action cannot be undone.</p>
+            <div className="flex items-center justify-end gap-4">
+              <button onClick={() => setScheduleToDelete(null)} className="font-outfit bg-gray-500 hover:bg-gray-600 dark:bg-slate-600 dark:hover:bg-slate-500 text-white font-normal py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all border-b-2 border-gray-700 hover:border-gray-600 active:border-b-0">
+                  Cancel
+              </button>
+              <button onClick={confirmDelete} className="font-outfit bg-red-600 hover:bg-red-700 text-white font-normal py-2 px-4 rounded-lg focus:outline-none focus:shadow-outline transition-all border-b-2 border-red-800 hover:border-red-700 active:border-b-0">
+                Delete
+              </button>
             </div>
           </div>
         </div>
