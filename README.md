@@ -8,6 +8,8 @@ This is a full-stack MERN application for the position of full stack web develop
 ## This solution includes
 
 *   **Student Management Dashboard:** The core of the frontend is a clean and responsive dashboard built with React. It provides full CRUD (Create, Read, Update, Delete) functionality for student profiles, allowing administrators to easily manage the roster of students being tracked.
+
+  
 ![Dashboard](dashboard.png)
 
 *   **Automated Codeforces Data Synchronization:** The system automatically fetches comprehensive data for each student from the Codeforces API once each day (2am) or when user manually selects to fetch updated data from the API.
