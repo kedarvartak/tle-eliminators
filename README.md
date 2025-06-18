@@ -3,6 +3,19 @@
 This is a full-stack MERN application for the position of full stack web developer at TLE Eliminators - https://www.tle-eliminators.com. The application includes a dashboard that stores data in MongoDB, while fetching a user's codeforces data once each day(2am) while also allowing to manually fetch whenever needed. 
 
 
+## Technology Stack
+
+| Category             | Technologies                               |
+| :------------------- | :----------------------------------------- |
+| **Frontend**         | React, React Router, Tailwind CSS          |
+| **Backend**          | Node.js, Express.js                        |
+| **Database**         | MongoDB                                    |
+| **Job Queue System** | BullMQ, Redis                              |
+| **Task Scheduling**  | node-cron                                  |
+| **API Communication**| Axios                                      |
+| **Utilities**        | date-fns                                   |
+
+
 ## This solution includes
 
 
@@ -61,15 +74,3 @@ This solution is scalable as well, the backend was architected as a distributed 
 
 4.  **The Email Worker:** This is the second consumer in the chain, listening to the `email-queue`.It checks the student's last submission date against the current date. If the student is deemed inactive, it sends an email. Because these tasks are quick and independent, this worker is configured to process jobs **concurrently**, allowing it to clear the email queue very rapidly.
 
-
-## Technology Stack
-
-| Category             | Technologies                               |
-| :------------------- | :----------------------------------------- |
-| **Frontend**         | React, React Router, Tailwind CSS          |
-| **Backend**          | Node.js, Express.js                        |
-| **Database**         | MongoDB                                    |
-| **Job Queue System** | BullMQ, Redis                              |
-| **Task Scheduling**  | node-cron                                  |
-| **API Communication**| Axios                                      |
-| **Utilities**        | date-fns                                   |
