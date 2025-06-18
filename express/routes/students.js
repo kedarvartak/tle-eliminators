@@ -4,6 +4,18 @@ const Student = require('../models/Student');
 const { fetchCodeforcesData } = require('../services/codeforcesService');
 const { syncAllStudents } = require('../cron/jobs');
 
+/**
+ * @route   POST /api/students/sync-all
+ * @desc    Manually trigger the sync job for all students (for testing)
+ * @access  Public (for testing)
+ */
+router.post('/sync-all', (req, res) => {
+    console.log('Manual sync-all trigger received.');
+    // Intentionally not awaiting this. It's a long process.
+    // The client gets an immediate response, and the job runs in the background.
+    syncAllStudents(); 
+    res.status(202).json({ message: 'Sync process for all students has been started. Check server logs for progress.' });
+});
 
 router.get('/', async (req, res, next) => {
     try {
@@ -73,7 +85,7 @@ router.post('/:id/sync', async (req, res, next) => {
 
         res.json(updatedStudent);
     } catch (err) {
-        // The service now provides a clean error message
+       
         res.status(400).json({ error: err.message });
     }
 });
@@ -88,7 +100,7 @@ router.put('/:id', async (req, res, next) => {
 
         let updatePayload = { ...req.body };
 
-        // Check if the codeforces handle has changed
+        // if codeforces handle is updated and is valid we call the api 
         const newHandle = req.body.codeforces_handle;
         if (newHandle && newHandle !== studentToUpdate.codeforces_handle) {
             try {

@@ -47,16 +47,6 @@ const fetchCodeforcesData = async (handle) => {
             axios.get(`${API_BASE_URL}user.status`, { params: { handle, from: 1, count: 2000 } })
         ]);
 
-        if (userInfoRes.data.status !== 'OK') {
-            throw new Error(`Failed to fetch user info: ${userInfoRes.data.comment}`);
-        }
-        if (contestHistoryRes.data.status !== 'OK') {
-            throw new Error(`Failed to fetch contest history: ${contestHistoryRes.data.comment}`);
-        }
-        if (submissionHistoryRes.data.status !== 'OK') {
-            throw new Error(`Failed to fetch submission history: ${submissionHistoryRes.data.comment}`);
-        }
-
         const user = userInfoRes.data.result[0];
 
         return {
@@ -74,10 +64,7 @@ const fetchCodeforcesData = async (handle) => {
                 throw new Error(`Codeforces handle "${handle}" not found.`);
             }
         }
-        // Consolidate error logging
-        const errorMessage = error.response?.data?.comment || error.message;
-        console.error(`Codeforces API Error for handle "${handle}": ${errorMessage}`);
-        throw new Error(`Failed to sync data for ${handle}. Reason: ${errorMessage}`);
+        
     }
 };
 

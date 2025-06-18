@@ -1,8 +1,8 @@
 const cron = require('node-cron');
 const Student = require('../models/Student');
 const { fetchCodeforcesData } = require('../services/codeforcesService');
+const { checkAndNotify } = require('../services/inactivityService');
 
-// Function to add a delay
 const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
@@ -14,7 +14,7 @@ const syncAllStudents = async () => {
     const startTime = Date.now();
 
     try {
-        const students = await Student.find({}, 'name codeforces_handle').lean();
+        const students = await Student.find({});
         console.log(`Found ${students.length} students to sync.`);
 
         for (let i = 0; i < students.length; i++) {
@@ -23,11 +23,17 @@ const syncAllStudents = async () => {
 
             try {
                 const newData = await fetchCodeforcesData(student.codeforces_handle);
-                await Student.updateOne({ _id: student._id }, { $set: newData });
+                const updatedStudent = await Student.findByIdAndUpdate(
+                    student._id,
+                    { $set: newData },
+                    { new: true }
+                );
                 console.log(`Successfully synced data for ${student.name}.`);
+
+                await checkAndNotify(updatedStudent);
+
             } catch (error) {
-                console.error(`Failed to sync data for ${student.name}. Reason: ${error.message}`);
-                // Continue to the next student even if one fails
+                console.error(`Failed to sync or process inactivity for ${student.name}. Reason: ${error.message}`);
             }
 
             // Add a delay to avoid hitting API rate limits
@@ -54,7 +60,7 @@ const scheduleJobs = () => {
 
     cron.schedule(schedule, syncAllStudents, {
         scheduled: true,
-        timezone: "Asia/Kolkata" // Example: Use a specific timezone
+        timezone: "Asia/Kolkata" 
     });
 
     console.log(`Student sync job scheduled with pattern: "${schedule}"`);
