@@ -64,11 +64,12 @@ This solution is scalable as well, the backend was architected as a distributed 
 
 ## Technology Stack
 
-*   **Backend:** Node.js, Express.js
-*   **Database:** MongoDB
-*   **Frontend:** React, React Router
-*   **Job Queues:** BullMQ, Redis
-*   **Scheduling:** node-cron
-*   **API Communication:** Axios
-*   **Styling:** Tailwind CSS
-*   **Date/Time Manipulation:** date-fns 
+| Category             | Technologies                               |
+| :------------------- | :----------------------------------------- |
+| **Frontend**         | React, React Router, Tailwind CSS          |
+| **Backend**          | Node.js, Express.js                        |
+| **Database**         | MongoDB                                    |
+| **Job Queue System** | BullMQ, Redis                              |
+| **Task Scheduling**  | node-cron                                  |
+| **API Communication**| Axios                                      |
+| **Utilities**        | date-fns                                   |
