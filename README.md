@@ -5,15 +5,15 @@ This is a full-stack MERN application for the position of full stack web develop
 
 ## Technology Stack
 
-| Category             | Technologies                               |
-| :------------------- | :----------------------------------------- |
-| **Frontend**         | React, React Router, Tailwind CSS          |
-| **Backend**          | Node.js, Express.js                        |
-| **Database**         | MongoDB                                    |
-| **Job Queue System** | BullMQ, Redis                              |
-| **Task Scheduling**  | node-cron                                  |
-| **API Communication**| Axios                                      |
-| **Utilities**        | date-fns                                   |
+| Category             | Technologies                               | Explanation                                                     |
+| :------------------- | :----------------------------------------- | :-------------------------------------------------------------- |
+| **Frontend**         | React, React Router, Tailwind CSS          | For building a dynamic, single-page application with a modern UI. |
+| **Backend**          | Node.js, Express.js                        | For creating the robust and scalable RESTful API.               |
+| **Database**         | MongoDB                                    | For flexible, schema-less storage of student and schedule data.    |
+| **Job Queue System** | BullMQ, Redis                              | To manage, persist, and process asynchronous background jobs.     |
+| **Task Scheduling**  | node-cron                                  | To schedule automated tasks, such as the daily data sync.       |
+| **API Communication**| Axios                                      | For making promise-based HTTP requests to the Codeforces API.   |
+| **Utilities**        | date-fns                                   | For simple and consistent handling of dates and times.          |
 
 
 ## This solution includes
