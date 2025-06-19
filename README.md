@@ -7,7 +7,7 @@ This is a full-stack MERN application for the position of full stack web develop
 
 | Category             | Technologies                               | Explanation                                                     |
 | :------------------- | :----------------------------------------- | :-------------------------------------------------------------- |
-| **Frontend**         | React, React Router, Tailwind CSS          | For building a dynamic, single-page application with a modern UI. |
+| **Frontend**         | React, React Router, Tailwind CSS          | For building a sleek frontend, tailwind for styling. |
 | **Backend**          | Node.js, Express.js                        | For creating the robust and scalable RESTful API.               |
 | **Database**         | MongoDB                                    | For flexible, schema-less storage of student and schedule data.    |
 | **Job Queue System** | BullMQ, Redis                              | To manage, persist, and process asynchronous background jobs.     |
