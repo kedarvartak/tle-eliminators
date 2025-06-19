@@ -33,7 +33,7 @@ This is a full-stack MERN application for the position of full stack web develop
 
 
 
-*   **In-Depth Performance Analytics:** For each student, the application generates and displays -
+*   **Performance Analytics:** For each student, the application generates and displays -
 1. Most difficult problem solved (by rating)
 2. Total problems solved
 3. Average rating
