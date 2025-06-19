@@ -1,5 +1,5 @@
 import React from 'react';
-import { formatDistance, differenceInDays } from 'date-fns';
+import { differenceInDays } from 'date-fns';
 
 const StatCard = ({ label, value, subtext }) => (
     <div className="bg-gray-100 dark:bg-slate-800/50 p-4 rounded-lg text-center">

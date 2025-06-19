@@ -45,6 +45,12 @@ This is a full-stack MERN application for the position of full stack web develop
 ![Analytics](analytics-1.png)
 
 
+![Analytics](dashbord-2.png)
+
+
+![Analytics](dashbord-3.png)
+
+
 ![Analytics](analytics-2.png)
 
 
