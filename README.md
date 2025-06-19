@@ -1,3 +1,7 @@
+- `Name` - Kedar Vartak
+- `Walkthrough video link` - https://youtu.be/jsR2v82d_f0
+- `Email` - kedar.vartak22@vit.edu
+
 # Student Progress Management System
 
 This is a full-stack MERN application for the position of full stack web developer at TLE Eliminators - https://www.tle-eliminators.com. The application includes a dashboard that stores data in MongoDB, while fetching a user's codeforces data once each day(2am) while also allowing to manually fetch whenever needed. 
