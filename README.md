@@ -19,13 +19,13 @@ This is a full-stack MERN application for the position of full stack web develop
 ## This solution includes
 
 
-![Jist of the solution](jist.png)
+![Jist of the solution](images/jist.png)
 
 
 *   **Student Management Dashboard:** The core of the frontend is a clean and responsive dashboard built with React. It provides full CRUD (Create, Read, Update, Delete) functionality for student profiles, allowing administrators to easily manage the roster of students being tracked.
 
   
-![Dashboard](dashboard.png)
+![Dashboard](images/dashboard.png)
 
 
 *   **Automated Codeforces Data Synchronization:** The system automatically fetches comprehensive data for each student from the Codeforces API once each day (2am) or when user manually selects to fetch updated data from the API.
@@ -42,16 +42,16 @@ This is a full-stack MERN application for the position of full stack web develop
 6. Show a submission heat map
 
 
-![Analytics](analytics-1.png)
+![Analytics](images/analytics-1.png)
 
 
-![Analytics](dashboard-2.png)
+![Analytics](images/dashboard-2.png)
 
 
-![Analytics](dashboard-3.png)
+![Analytics](images/dashboard-3.png)
 
 
-![Analytics](analytics-2.png)
+![Analytics](images/analytics-2.png)
 
 
 *   **Automated Inactivity Detection and Email Reminders:** The system  identifies students who have not made any submissions on Codeforces for a predefined period (seven days). Upon detection, it automatically triggers a job to send a polite, encouraging reminder email to the student. 
@@ -63,7 +63,7 @@ This solution is scalable as well, the backend was architected as a distributed 
 ### The Components of the System
 
 
-![Scalable](scalable.png)
+![Scalable](images/scalable.png)
 
 
 1.  **The Scheduler (Producer):** A lightweight cron job serves as the system's main producer. Its sole responsibility is to trigger once every 24 hours. When it runs, it queries the database for the list of all students and, for each student, enqueues a `sync-student` job into a dedicated queue. 
