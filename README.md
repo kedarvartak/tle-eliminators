@@ -56,7 +56,7 @@ This is a full-stack MERN application for the position of full stack web develop
 
 *   **Automated Inactivity Detection and Email Reminders:** The system  identifies students who have not made any submissions on Codeforces for a predefined period (seven days). Upon detection, it automatically triggers a job to send a polite, encouraging reminder email to the student. 
 
-## The Scalability Architecture: From Monolith to Distributed Queues
+## The Scalability Architecture
 
 This solution is scalable as well, the backend was architected as a distributed system using a Producer/Consumer pattern, orchestrated by specialized job queues. This design ensures efficiency, resilience, and true scalability.
 
