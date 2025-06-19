@@ -103,3 +103,41 @@ The backend exposes a RESTful API for managing students and sync schedules.
 | `PUT`  | `/schedules/:id`       | Updates an existing schedule by its ID. Can be used to change the name, pattern, or `isEnabled` status.       |
 | `DELETE`| `/schedules/:id`       | Deletes a cron job schedule.                                                                                  |
 
+
+## How to Run
+
+To get the application up and running locally, you will need to start the backend server, the two specialized worker processes, and the frontend development server. Each should be run in a separate terminal.
+
+### Backend Setup
+
+All backend processes are run from the `express` directory.
+
+1.  **Start the Express Server:**
+    ```bash
+    cd express
+    npm start
+    ```
+
+2.  **Start the Sync Worker:** This worker is responsible for fetching data from the Codeforces API.
+    ```bash
+    cd express
+    npm run sync-worker
+    ```
+
+3.  **Start the Email Worker:** This worker is responsible for sending inactivity reminder emails.
+    ```bash
+    cd express
+    npm run worker
+    ```
+
+### Frontend Setup
+
+Navigate to the `frontend` directory to start the React application.
+
+```bash
+cd frontend
+npm run start
+```
+
+Once all processes are active, the application will be available at `http://localhost:3000`.
+
