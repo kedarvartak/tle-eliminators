@@ -83,10 +83,13 @@ This solution is scalable as well, the backend was architected as a distributed 
 ![Test](images/test-1.png)
 
 
-![Analytics](images/test-2.png)
+![Test](images/test-2.png)
 
 
-![Analytics](images/test-3.png)
+![Test](images/test-3.png)
+
+
+![Mail](images/mail.png)
 
 
 ## API Endpoints
