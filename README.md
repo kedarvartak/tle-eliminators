@@ -79,6 +79,16 @@ This solution is scalable as well, the backend was architected as a distributed 
 
 4.  **The Email Worker:** This is the second consumer in the chain, listening to the `email-queue`.It checks the student's last submission date against the current date. If the student is deemed inactive (7 days ), it sends an email. Because these tasks are quick and independent, this worker is configured to process jobs **concurrently**, allowing it to clear the email queue very rapidly.
 
+
+![Test](images/test-1.png)
+
+
+![Analytics](images/test-2.png)
+
+
+![Analytics](images/test-3.png)
+
+
 ## API Endpoints
 
 The backend exposes a RESTful API for managing students and sync schedules.
