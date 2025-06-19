@@ -5,7 +5,7 @@ const { fetchCodeforcesData } = require('../services/codeforcesService');
 const Student = require('../models/Student');
 require('dotenv').config();
 
-// Establish MongoDB connection for this worker process
+
 mongoose.connect(process.env.MONGO_URI)
     .then(() => console.log('Sync worker connected to MongoDB successfully.'))
     .catch(err => {
@@ -15,22 +15,21 @@ mongoose.connect(process.env.MONGO_URI)
 
 console.log('Sync worker process started.');
 
-// Create a new worker that processes jobs from the 'sync-queue'.
-// This worker is rate-limited to respect the Codeforces API.
+
 const syncWorker = new Worker('sync-queue', async (job) => {
     const { studentId, handle } = job.data;
     console.log(`Processing sync job ${job.id} for handle: ${handle}`);
 
     try {
-        // 1. Fetch fresh data from Codeforces
+        
         const newData = await fetchCodeforcesData(handle);
 
-        // 2. Update the student's record in the database
+        
         await Student.updateOne({ _id: studentId }, { $set: newData });
         console.log(`Successfully synced data for handle: ${handle}`);
 
-        // 3. Add a job to the email queue to check for inactivity
-        const student = await Student.findById(studentId).lean(); // Get the full student doc
+    
+        const student = await Student.findById(studentId).lean(); 
         if (student) {
             await emailQueue.add('check-inactivity', { 
                 studentId: student._id.toString(),
@@ -43,15 +42,14 @@ const syncWorker = new Worker('sync-queue', async (job) => {
         }
     } catch (error) {
         console.error(`Failed to process sync job for handle ${handle}. Reason: ${error.message}`);
-        // IMPORTANT: Re-throw the error to make the job fail in BullMQ
-        // This will allow BullMQ's retry mechanism to kick in.
+        
         throw error;
     }
 }, { 
     connection: redisConnection,
     limiter: {
-        max: 1, // Max 1 job
-        duration: 1100 // per 1.1 seconds
+        max: 1, 
+        duration: 1100 
     }
 });
 

@@ -73,3 +73,27 @@ This solution is scalable as well, the backend was architected as a distributed 
 
 4.  **The Email Worker:** This is the second consumer in the chain, listening to the `email-queue`.It checks the student's last submission date against the current date. If the student is deemed inactive, it sends an email. Because these tasks are quick and independent, this worker is configured to process jobs **concurrently**, allowing it to clear the email queue very rapidly.
 
+## API Endpoints
+
+The backend exposes a RESTful API for managing students and sync schedules.
+
+### Student Management (`/api/students`)
+
+| Method | Endpoint               | Description                                                                                                   |
+| :----- | :--------------------- | :------------------------------------------------------------------------------------------------------------ |
+| `GET`  | `/`                    | Retrieves a list of all students.                                                                             |
+| `GET`  | `/:id`                 | Retrieves a single student by their unique ID.                                                                |
+| `POST` | `/`                    | Creates a new student. Expects a JSON body with `name`, `email`, and `codeforces_handle`.                       |
+| `PUT`  | `/:id`                 | Updates a student's information. If the `codeforces_handle` is changed, it re-fetches data.                    |
+| `DELETE`| `/:id`                 | Deletes a student from the database.                                                                          |
+| `POST` | `/:id/sync`            | Manually triggers a data synchronization for a specific student from the Codeforces API.                      |
+
+### Schedule Management (`/api/cron`)
+
+| Method | Endpoint               | Description                                                                                                   |
+| :----- | :--------------------- | :------------------------------------------------------------------------------------------------------------ |
+| `GET`  | `/schedules`           | Retrieves all saved cron job schedules.                                                                       |
+| `POST` | `/schedules`           | Creates a new cron job schedule. Expects `name` and `schedule` (cron pattern).                                |
+| `PUT`  | `/schedules/:id`       | Updates an existing schedule by its ID. Can be used to change the name, pattern, or `isEnabled` status.       |
+| `DELETE`| `/schedules/:id`       | Deletes a cron job schedule.                                                                                  |
+

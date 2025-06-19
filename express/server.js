@@ -13,8 +13,6 @@ app.use(express.json());
 
 mongoose.connect(process.env.MONGO_URI)
     .then(() => {
-        console.log('MongoDB connection established successfully');
-        // Schedule cron jobs to run
         scheduleJobs();
     })
     .catch(err => console.error('MongoDB connection error:', err));
